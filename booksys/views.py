@@ -10,6 +10,7 @@ from django.db.models.functions import Coalesce
 # Create your views here.
 
 class GenreListView(APIView):
+    # linked to the url showing all the genres
     def get(self, request):
         genres = Genre.objects.all()
         serializer = GenreSerializer(genres, many=True)
@@ -24,6 +25,7 @@ class GenreListView(APIView):
     
 
 class AuthorListView(APIView):
+    # linked to the url showing all the authors
     def get(self, request):
         role = request.query_params.get('role')
         authors = Author.objects.annotate(
@@ -41,6 +43,7 @@ class AuthorListView(APIView):
         return Response(serializer.data)
     
     def post(self, request):
+        # when creating/updating set the context as nested_in_author so that if you're creating a nested book you do not require an author
         serializer = AuthorSerializer(
             data=request.data,
             context={'nested_in_author': True}  
@@ -52,7 +55,7 @@ class AuthorListView(APIView):
 
 
 class AuthorDetailView(APIView):
-
+    # linked to the url showing a specific author
     def get(self, request, pk):
         queryset = Author.objects.annotate(
                 avg_rating=Avg('authored_books__book__rating')
@@ -63,6 +66,7 @@ class AuthorDetailView(APIView):
     
     def put(self, request, pk):
         author = get_object_or_404(Author, pk=pk)
+        # when creating/updating set the context as nested_in_author so that if you're creating a nested book you do not require an author
         serializer = AuthorSerializer(
             author,
             data=request.data,
@@ -75,6 +79,7 @@ class AuthorDetailView(APIView):
     
     def patch(self, request, pk):
         author = get_object_or_404(Author, pk=pk)
+        # when creating/updating set the context as nested_in_author so that if you're creating a nested book you do not require an author
         serializer = AuthorSerializer(
             author,
             data=request.data,
@@ -95,7 +100,7 @@ class AuthorDetailView(APIView):
 
 
 class BookListView(APIView):
-
+    # linked to the url showing all books
     def get(self, request):
 
         # getting query parameters
@@ -128,6 +133,7 @@ class BookListView(APIView):
 
 class BookDetailView(APIView):
 
+    # linked to the url showing a specific book
     def get(self, request, pk):
         queryset = Book.objects.annotate(
                 num_copies= Coalesce(Count('copies'), Value(0))
@@ -159,7 +165,7 @@ class BookDetailView(APIView):
 
 
 class CopyListView(APIView):
-
+    # linked to the url showing all copies
     def get(self, request):
         copies = Copy.objects.all()
         book = request.query_params.get('book')
@@ -196,6 +202,7 @@ class CopyListView(APIView):
 
 class CopyDetailView(APIView):
 
+    # linked to the url showing a specific copy
     def get(self, request, pk):
         copy = get_object_or_404(Copy, pk=pk) #pass query set instead of the model
         serializer = CopySerializer(copy)

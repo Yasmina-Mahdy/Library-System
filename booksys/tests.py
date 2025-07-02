@@ -13,6 +13,8 @@ Can link them
 Can fetch them
 """
 
+# some tests, gave up halfway thru
+
 class CopySerializerValidationTest(TestCase):
     def setUp(self):
         self.book = Book.objects.create(
